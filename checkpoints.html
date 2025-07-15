@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>CheckPoint Get Key</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background-color: #111;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+    }
+
+    .box {
+      background-color: #1c1c1c;
+      padding: 30px;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 0 10px rgba(255, 0, 150, 0.3);
+    }
+
+    .status {
+      margin-bottom: 20px;
+      font-size: 18px;
+      color: #ff4;
+    }
+
+    button {
+      margin: 10px;
+      padding: 12px 25px;
+      background-color: #ff0055;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+
+    .key-box {
+      margin-top: 25px;
+      padding: 10px;
+      background: #222;
+      border-radius: 8px;
+      font-weight: bold;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="box">
+    <h2>Rez<span style="color:#ff0055">Hub</span> - CheckPoint</h2>
+    <div class="status">Tiến trình: <span id="count">0</span>/2</div>
+    <button onclick="visit(1)">Bước 1: Linkvertise</button>
+    <button onclick="visit(2)">Bước 2: Yeumoney</button>
+
+    <div class="key-box" id="keyBox">
+      Key của bạn: <span id="keyText">Đang tải...</span>
+      <br><br>
+      <button onclick="copyKey()">Copy Key</button>
+    </div>
+  </div>
+
+  <script>
+    let count = 0;
+
+    function visit(step) {
+      if (step === 1) {
+        window.open("https://link4m.com/dJEw4IPd", "_blank"); // 🔁 Thay bằng link bạn
+      } else if (step === 2) {
+        window.open("https://yeumoney.vn/somepage", "_blank"); // 🔁 Thay bằng link bạn
+      }
+
+      count++;
+      document.getElementById("count").innerText = count;
+
+      if (count >= 2) {
+        getKey();
+      }
+    }
+
+    function getKey() {
+      const device = getDeviceID();
+      fetch("https://rezgetkey.kesug.com/getkey.php?device=" + device) // 🔁 Thay bằng domain bạn
+        .then(res => res.json())
+        .then(data => {
+          if (data.status === "success") {
+            document.getElementById("keyBox").style.display = "block";
+            document.getElementById("keyText").innerText = data.key;
+            window.keyValue = data.key;
+          } else {
+            document.getElementById("keyText").innerText = "Không lấy được key.";
+          }
+        });
+    }
+
+    function copyKey() {
+      navigator.clipboard.writeText(window.keyValue || "");
+      alert("✅ Đã copy key vào clipboard!");
+    }
+
+    function getDeviceID() {
+      let id = localStorage.getItem("deviceID");
+      if (!id) {
+        id = Math.random().toString(36).substr(2, 12);
+        localStorage.setItem("deviceID", id);
+      }
+      return id;
+    }
+  </script>
+
+</body>
+</html>
