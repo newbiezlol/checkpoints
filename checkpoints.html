@@ -1,118 +1,58 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
-  <meta charset="UTF-8">
-  <title>CheckPoint Get Key</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      background-color: #111;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100vh;
-      margin: 0;
-    }
-
-    .box {
-      background-color: #1c1c1c;
-      padding: 30px;
-      border-radius: 15px;
-      text-align: center;
-      box-shadow: 0 0 10px rgba(255, 0, 150, 0.3);
-    }
-
-    .status {
-      margin-bottom: 20px;
-      font-size: 18px;
-      color: #ff4;
-    }
-
-    button {
-      margin: 10px;
-      padding: 12px 25px;
-      background-color: #ff0055;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      cursor: pointer;
-    }
-
-    .key-box {
-      margin-top: 25px;
-      padding: 10px;
-      background: #222;
-      border-radius: 8px;
-      font-weight: bold;
-      display: none;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Rez Hub</title>
+    <link rel="stylesheet" href="https://z3rx.tech/keysystem/style.css">
+    <style>
+        /* Có thể bổ sung CSS nếu muốn */
+    </style>
 </head>
+
 <body>
+    <img src="rez.png" class="background-logo" alt="Background Logo">
+    <div class="container">
+        <div class="logo-section">
+            <img src="rez.png" alt="Rez Logo" class="logo">
+        </div>
+        <div class="content-section">
+            <h2>Rez <span class="highlight">Hub</span></h2>
+            <h4 id="checkpointText">Check Point 0/1</h4>
 
-  <div class="box">
-    <h2>Rez<span style="color:#ff0055">Hub</span> - CheckPoint</h2>
-    <div class="status">Tiến trình: <span id="count">0</span>/2</div>
-    <button onclick="visit(1)">Bước 1: Linkvertise</button>
-    <button onclick="visit(2)">Bước 2: Yeumoney</button>
-
-    <div class="key-box" id="keyBox">
-      Key của bạn: <span id="keyText">Đang tải...</span>
-      <br><br>
-      <button onclick="copyKey()">Copy Key</button>
+            <button class="btn submit" id="btn1"
+                onclick="openLinkAndTrack(1, 'https://yeumoney.vn/getkey')">Yeumoney</button>
+            <button class="btn submit" id="btn2" onclick="openLinkAndTrack(2, 'https://discord.gg/Ye7tn69n')">Link
+                4m</button>
+        </div>
+        <div class="version">Version: <span class="version-number">1.0.0</span></div>
     </div>
-  </div>
 
-  <script>
-    let count = 0;
+    <script>
+        let completed = [false, false];
 
-    function visit(step) {
-      if (step === 1) {
-        window.open("https://link4m.com/dJEw4IPd", "_blank"); // 🔁 Thay bằng link bạn
-      } else if (step === 2) {
-        window.open("https://yeumoney.vn/somepage", "_blank"); // 🔁 Thay bằng link bạn
-      }
+        function openLinkAndTrack(index, url) {
+            // Mở link trong tab mới
+            window.open(url, '_blank');
 
-      count++;
-      document.getElementById("count").innerText = count;
+            // Đánh dấu checkpoint
+            completed[index - 1] = true;
 
-      if (count >= 2) {
-        getKey();
-      }
-    }
+            // Đếm số bước đã hoàn thành
+            const done = completed.filter(Boolean).length;
 
-    function getKey() {
-      const device = getDeviceID();
-      fetch("https://rezgetkey.kesug.com/getkey.php?device=" + device) // 🔁 Thay bằng domain bạn
-        .then(res => res.json())
-        .then(data => {
-          if (data.status === "success") {
-            document.getElementById("keyBox").style.display = "block";
-            document.getElementById("keyText").innerText = data.key;
-            window.keyValue = data.key;
-          } else {
-            document.getElementById("keyText").innerText = "Không lấy được key.";
-          }
-        });
-    }
+            // Cập nhật giao diện
+            document.getElementById("checkpointText").textContent = `Check Point ${done}/2`;
 
-    function copyKey() {
-      navigator.clipboard.writeText(window.keyValue || "");
-      alert("✅ Đã copy key vào clipboard!");
-    }
-
-    function getDeviceID() {
-      let id = localStorage.getItem("deviceID");
-      if (!id) {
-        id = Math.random().toString(36).substr(2, 12);
-        localStorage.setItem("deviceID", id);
-      }
-      return id;
-    }
-  </script>
-
+            // Nếu đã xong 2 bước → chuyển sang trang nhận key
+            if (done === 2) {
+                setTimeout(() => {
+                    window.location.href = "success.html"; // Đổi sang trang nhận key của bạn
+                }, 1000); // đợi 1 giây cho đẹp
+            }
+        }
+    </script>
 </body>
+
 </html>
